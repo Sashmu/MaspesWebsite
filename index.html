@@ -13,7 +13,8 @@ URI     : https://colorlib.com
     <title>Haz más con nuestra App</title>
     <!-- Required meta tags -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
-     <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Mobland - Mobile App Landing Page Template">
@@ -36,6 +37,23 @@ URI     : https://colorlib.com
 
 <body data-spy="scroll" data-target="#navbar" data-offset="30" style="background-color: #000">
     <div class="position-absolute w-100 h-100 top-0 start-0" style="background-color: #000; opacity: 0.7;"></div>
+    
+    <div class="position-absolute red w-100 d-flex justify-content-center align-items-center" style="z-index: 100000;"> 
+        <!-- show d-block -->
+        <div class="modal fade bd-example-modal-xl" id="popupsuccess" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" >
+            <div class="modal-dialog modal-sm">
+              <div class="modal-content">
+                <div class="w-100 d-flex justify-content-center align-items-center" style="height: 200px;background-color: rgb(94, 239, 94);border-top-left-radius: 3%;">
+                    <img  src="images/check.png" width="30%" height="45%" alt="">
+                </div>
+                <div style="height: 100px" class="w-100 d-flex justify-content-center align-items-center">
+                    <div class="text-center text-success p-5">El pago se realiza con éxito</div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+    </div>
     <!-- Nav Menu -->
 
     <div class="nav-menu fixed-top">
@@ -621,11 +639,45 @@ restaurante.</p>
     </footer>
     <!-- checkout script -->
     <script>
+        let params = new URLSearchParams(window.location.search);
+        let id = params.get("id"); // is the string "Jonathan"
+        
+        //Pop Up Generate
+        if(id && id != '404') {
+
+            const myElement = document.getElementById("popupsuccess");
+            myElement.className = "show d-block";
+            $("#popupsuccess").fadeIn("2000");
+
+            const myTimeout = setTimeout(myGreeting, 5000);
+
+            function myGreeting() {
+                const nextURL = 'http://127.0.0.1:5500/index.html';
+                const nextTitle = 'My new page title';
+                const nextState = { additionalInformation: 'Updated the URL with JS' };
+                myElement.className = "";
+                // This will create a new entry in the browser's history, without reloading
+                window.history.pushState(nextState, nextTitle, nextURL);
+                window.location.reload()
+            }
+            // alert("Noice Your Payment Is Completed") 
+        } else if(id && id == '404') {
+           alert("Payment Failed Try Again")
+           
+           const nextURL = 'http://127.0.0.1:5500/index.html';
+            const nextTitle = 'My new page title';
+            const nextState = { additionalInformation: 'Updated the URL with JS' };
+            // This will create a new entry in the browser's history, without reloading
+            window.history.pushState(nextState, nextTitle, nextURL);
+            window.location.reload()
+        } 
+
+
         var stripe = Stripe(
                 "pk_test_51LGnjzCXksdhCh0r46jisYVKZGdpwwe7SfQhr4Y5EROmpvWNq3Qzs6wnAbalq8k2wZRj5epcNqJXJqN7dWdhgAZP001W1Leoli"
         )
 
-        document.getElementById("bronce").addEventListener("click", function() {
+        document.getElementById("bronce").addEventListener("click", async function(e) {
                 stripe.redirectToCheckout({
                     lineItems: [
                         { 
@@ -634,13 +686,12 @@ restaurante.</p>
                         },
                     ],
                     mode: "subscription",
-                    successUrl: "http://127.0.0.1:5500/index.html",
-                    cancelUrl: "http://127.0.0.1:5500/index.html"
-                }).then(result => {
-                     console.log(result);
-                     console.log("subscription");
-                     window.alert("Payment successfull")
+                    successUrl: "http://127.0.0.1:5500/index.html?id={CHECKOUT_SESSION_ID}",
+                    cancelUrl: "http://127.0.0.1:5500/index.html?id=404"
                 })
+                .then(function(error){
+                     window.alert("Error Occure")
+                })  
         })
 
         document.getElementById("plata").addEventListener("click", function() {
@@ -652,8 +703,8 @@ restaurante.</p>
                         },
                     ],
                     mode: "subscription",
-                    successUrl: "https://harmonious.netlify.app",
-                    cancelUrl: "https://harmonious.netlify.app"
+                    successUrl: "http://127.0.0.1:5500/index.html?id={CHECKOUT_SESSION_ID}",
+                    cancelUrl: "http://127.0.0.1:5500/index.html?id=404"
                 }).then(result => {
                      console.log(result);
                   
@@ -671,8 +722,8 @@ restaurante.</p>
                         },
                     ],
                     mode: "subscription",
-                    successUrl: "https://harmonious.netlify.app",
-                    cancelUrl: "https://harmonious.netlify.app"
+                    successUrl: "http://127.0.0.1:5500/index.html?id={CHECKOUT_SESSION_ID}",
+                    cancelUrl: "http://127.0.0.1:5500/index.html?id=404"
                 }).then(result => {
                      console.log(result);
                 })
